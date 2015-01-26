@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <title>چند شنبه</title>
+    <link type='text/css' rel='stylesheet' href='/css/style.css'/>
+    <link type='text/css' rel='stylesheet' href='/css/chart.css'/>
+    <link type="text/css" rel="stylesheet" href="/css/legend.css"/>
+    <link type="text/css" rel="stylesheet" href="/css/icons.css"/>
+    <style type='text/css'>
+      text {
+        font-size: 9px;
+        pointer-events: none;
+      }
+
+      text.parent {
+        fill: white;
+        text-shadow: 2px 2px rgba(107, 100, 100, 0.84);
+        font-size: 24px;
+      }
+
+      circle {
+        fill: #ccc;
+        stroke: #999;
+        pointer-events: all;
+      }
+
+      circle.parent {
+        fill: #ffffff;
+        fill-opacity: .2;
+        stroke: rgb(240, 174, 70);
+      }
+
+      circle.parent:hover {
+        stroke: #ff7f0e;
+        stroke-width: 2px;
+      }
+
+      circle.parent:first-child {
+        fill: rgba(0,0,0,0);
+      }
+
+      circle.child {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 class="title">
+      <img src="/svg/logo.svg"/>
+    </h2>
+    <script type='text/javascript' src='/js/d3.js'></script>
+    <script type='text/javascript' src='/js/d3.layout.js'></script>
+    <script type="text/javascript" src="/js/d3.geom.js"></script>
+    <script type="text/javascript" src='/js/categories.js'></script>
+
+    <div class="bubble"></div>
+    <div class="legend"></div>
+
+    <script type='text/javascript'>
+
+
+ var w = screen.width * 3 / 10,
+          h = screen.height;
+
+      // var legendNodes = d3.range(14).map(function() { return { radius: 30 }; }),
+      // var legendNodes = [{radious: 30}, {radious : 20}]},
+          // color = d3.scale.category10();
+
+      var legendNodes = getCategories();
+
+      var force = d3.layout.force()
+          .gravity(0.05)
+          .charge(function(d, i) { return i ? 0 : -2000; })
+          .nodes(legendNodes)
+          .size([w, h]);
+
+      var legendRoot = legendNodes[0];
+      legendRoot.radius = 0;
+      legendRoot.fixed = true;
+
+      force.start();
+
+      var svgLegend = d3.select("body .legend").append("svg:svg")
+          .attr("width", w)
+          .attr("height", h)
+          .attr("class", 'chart');
+
+      svgLegend.selectAll("circle")
+          .data(legendNodes.slice(1))
+        .enter().append("svg:circle")
+          .attr("r", function(d) { return d.radius - 2; })
+          .attr("class", function(d) { return d.category; })
+
+      svgLegend.selectAll('text')
+          .data(legendNodes.slice(1))
+          .enter()
+          .append('svg:text')
+          .attr('class', function(d) { return 'ficon-' + d.category; } )
+          .text(function (d) { return d.unicode})
+          .style('font-size', '28px')
+          .style('text-anchor', 'middle')
+          .style('fill', 'white')
+
+      force.on("tick", function(e) {
+        var q = d3.geom.quadtree(legendNodes),
+            i = 0,
+            n = legendNodes.length;
+
+        while (++i < n) {
+          q.visit(collide(legendNodes[i]));
+        }
+
+        svgLegend.selectAll("circle")
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+
+        svgLegend.selectAll("text")
+            .attr("x", function(d) { return d.x; })
+            .attr("y", function(d) { return d.y + (d.radius / 2 - 2); })
+      });
+
+      svgLegend.on("mousemove", function() {
+        var p1 = d3.svg.mouse(this);
+        legendRoot.px = p1[0];
+        legendRoot.py = p1[1];
+        force.resume();
+      });
+
+      function collide(node) {
+        var r = node.radius + 16,
+            nx1 = node.x - r,
+            nx2 = node.x + r,
+            ny1 = node.y - r,
+            ny2 = node.y + r;
+        return function(quad, x1, y1, x2, y2) {
+          if (quad.point && (quad.point !== node)) {
+            var x = node.x - quad.point.x,
+                y = node.y - quad.point.y,
+                l = Math.sqrt(x * x + y * y),
+                r = node.radius + quad.point.radius;
+            if (l < r) {
+              l = (l - r) / l * .5;
+              node.x -= x *= l;
+              node.y -= y *= l;
+              quad.point.x += x;
+              quad.point.y += y;
+            }
+          }
+          return x1 > nx2
+              || x2 < nx1
+              || y1 > ny2
+              || y2 < ny1;
+        };
+      }
+
+
+
+
+
+    // ----------
+
+var w = screen.width,
+    h = screen.height,
+    r = screen.height - 200,
+    x = d3.scale.linear().range([0, r]),
+    y = d3.scale.linear().range([0, r]),
+    node,
+    root;
+
+var pack = d3.layout.pack()
+    .size([r, r])
+    .value(function(d) { return d.size; })
+
+var vis = d3.select('body .bubble').insert('svg:svg', 'h2')
+    .attr('width', w)
+    .attr('height', h)
+    .attr('class', 'chart')
+  .append('svg:g')
+    .attr('transform', 'translate(' + (w - r) / 2 + ',' + (h - r) / 4 + ')');
+
+d3.json('chart.json', function(data) {
+
+  node = root = data;
+
+  var nodes = pack.nodes(root);
+
+  vis.selectAll('circle')
+      .data(nodes)
+    .enter().append('svg:circle')
+      .attr('class', function(d) { return d.children ? 'parent ' : 'child ' + d.name })
+      .attr('cx', function(d) { return d.x; })
+      .attr('cy', function(d) { return d.y; })
+      .attr('r', function(d) { return d.r; })
+      .on('click', function(d) { return zoom(node == d ? root : d); });
+
+  vis.selectAll('text')
+      .data(nodes)
+    .enter().append('svg:text')
+      .attr('class', function(d) { return d.children ? 'parent' : 'child'; })
+      .attr('x', function(d) { return d.x; })
+      .attr('y', function(d) { return d.y })
+      .attr('dy', '.35em')
+      .attr('text-anchor', 'middle')
+      .style('opacity', function(d) { return d.r > 20 && d.children ? 1 : 0; })
+      .text(function(d) { return getCategoryLabel(d.name)? getCategoryLabel(d.name): d.name });
+
+  d3.select(window).on('click', function() { zoom(root); });
+});
+
+function zoom(d, i) {
+  var k = r / d.r / 2;
+  x.domain([d.x - d.r, d.x + d.r]);
+  y.domain([d.y - d.r, d.y + d.r]);
+
+  var t = vis.transition()
+      .duration(d3.event.altKey ? 7500 : 750);
+
+  t.selectAll('circle')
+      .attr('cx', function(d) { return x(d.x); })
+      .attr('cy', function(d) { return y(d.y); })
+      .attr('r', function(d) { return k * d.r; });
+
+  t.selectAll('text')
+      .attr('x', function(d) { return x(d.x); })
+      .attr('y', function(d) { return y(d.y); })
+      .style('opacity', function(d) { return ((k * d.r > 20 && k != 1) || d.children) ? 1 : 0; })
+      .style('font-size', function (d) { return !d.children ? (k != 1 ? '12px' : '8px') : '24px'; })
+
+  node = d;
+  d3.event.stopPropagation();
+}
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+
+  </body>
+</html>

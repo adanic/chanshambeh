@@ -1,0 +1,59 @@
+<!-- views/profile.ejs -->
+<!doctype html>
+<html>
+<head>
+    <title>چند شنبه</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+        body        { padding-top:80px; word-wrap:break-word; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header" style="height: 40px;">
+        <span class="fa fa-bars" style="font-size: 32px;"><font class="yekan"> نمودار چند شنبه</font></span>
+        <span style="float: left;"><a href="/logout" class="btn btn-default btn-sm">خروج</a></span>
+    </div>
+
+    <div class="row">
+        <div>
+            <!-- HADAF INFORMATION -->
+            <table class="table table-striped table-hover" dir="rtl" style="white-space: nowrap;">
+                <thead>
+                    <tr class="warning">
+                        <th style="text-align:right">سپرده</th>
+                        <th style="text-align:right">تاریخ</th>
+                        <th style="text-align:right">مبلغ</th>
+                        <th style="text-align:right">نوع تراکنش</th>
+                        <th style="text-align:right">جزییات</th>
+                        <th style="text-align:right">دسته بندی</th>
+                        <th style="text-align:right">برچسب ها</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(var i=0; i<transactions.length; i++) {%>
+                        <tr class=<%= i%2==0? 'success': '' %>>
+                            <td><%= transactions[i].deposit %> </td>
+                            <td><%= transactions[i].date.slice(0,4) + '/' + transactions[i].date.slice(4,6) + '/' + transactions[i].date.slice(6, 8) + ' ' + transactions[i].date.slice(8,10) + ':' + transactions[i].date.slice(10, 12) + ':' + transactions[i].date.slice(12, 14) %> </td>
+                            <td><%= transactions[i].amount %> </td>
+                            <td><%= transactions[i].type=='d'? 'برداشت': 'واریز' %> </td>
+                            <td><%= transactions[i].detail %> </td>
+                            <td><%= transactions[i].category %> </td>
+                            <td><%= transactions[i].tags %> </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+            <%= result %>
+
+        </div>
+
+
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+body {
+  background: url('/png/background.png') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  direction: rtl;
+  font-family: 'Yekan' !important;
+}
+
+h1, .yekan {
+  font-family: 'Yekan' !important;
+}
+
+@font-face {
+  font-family: 'Yekan';
+  src: url('../font/Yekan.woff') format('woff');
+}

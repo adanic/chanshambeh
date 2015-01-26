@@ -1,0 +1,77 @@
+@font-face {
+	font-family: 'icomoon';
+	src:url('../font/icons.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="ficon-"], [class*=" ficon-"] {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.ficon-household:before {
+	content: "\e600";
+}
+
+.ficon-food:before {
+	content: "\e601";
+}
+
+.ficon-transportation:before {
+	content: "\e602";
+}
+
+.ficon-education:before {
+	content: "\e603";
+}
+
+.ficon-bill:before {
+	content: "\e604";
+}
+
+.ficon-hobby:before {
+	content: "\e605";
+}
+
+.ficon-healthcare:before {
+	content: "\e606";
+}
+
+.ficon-hygiene:before {
+	content: "\e607";
+}
+
+.ficon-clothing:before {
+	content: "\e608";
+}
+
+.ficon-personal:before {
+	content: "\e609";
+}
+
+.ficon-present:before {
+	content: "\e60a";
+}
+
+.ficon-commitment:before {
+	content: "\e60c";
+}
+
+.ficon-investment:before {
+	content: "\e60d";
+}
+
+.ficon-expense:before {
+	content: "\e60e";
+}
+
