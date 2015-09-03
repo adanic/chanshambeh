@@ -61,7 +61,7 @@ module.exports = function(app, passport) {
         else {
             request
                 .post(config.uri.hadaf + '/api/oauth2/token')
-                .set('Authorization', 'Basic' + config.authorization) // base64 user:pass
+                .set('Authorization', 'Basic ' + config.authorization) // base64 user:pass
                 .type('form')
                 .send({ code: req.query.code })
                 .send({ redirect_uri: config.uri.redirect_uri + '/transactions'})
